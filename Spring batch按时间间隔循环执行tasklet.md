@@ -95,3 +95,45 @@ public class CheckETLOnlineTasklet implements Tasklet {
 
 }
 ```
+
+```java
+public class ScheduleUtils {
+    private static final int CORE_POOL_SIZE = 5;
+    private static volatile ScheduledThreadPoolExecutor threadPool;
+    
+    //The schedule running result
+    public static final int ALL_SCHEDULE_COMPLETE = 0;
+    public static final int EXIT_DURING_SCHEDULE = 1;
+    
+    //Used to tell schedule repeat or not
+    public static final Boolean REPEAT = true;
+    public static final Boolean TERMINATE = false;
+    
+    private ScheduleUtiles(){}
+    
+    private static ScheduledThreadPoolExecutor getInstance(){
+        if(threadPool == null || threadPool.isShutdown()) {
+            synchronized(ScheduleUtils.class) {
+                threadPool = new ScheduledThreadPoolExecutor(CORE_POOL_SIZE,
+                        new BasicThreadFactory.Builder().namingPattern("schedule-pool-%d").daemon(true).build());
+            }
+        }
+        return threadPool;
+    }
+    
+    public static int scheduleDelayByExecuteNumber(Callable command, long intervalDelay, int execNum)
+            throw ExecutionException, InterruptedException {
+        ScheduledThreadPoolExecutor executor = ScheduleUtils.getInstance();
+        
+        for(int i=0; i< execNum; i++){
+            ScheduledFuture isRepeat = executor.schedule(command, interalDelay, TimeUnit.SECONDS);
+            if(!(Boolean) isRepeat.get()) {
+                executor.remove((Runnable) isRepeat);
+                return EXIT_DURING_SCHEDULE;
+            }
+        }
+        return ALL_SCHEDULE_COMPLETE;
+    }
+}
+
+```
