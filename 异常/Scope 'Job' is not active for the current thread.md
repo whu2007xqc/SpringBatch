@@ -13,11 +13,12 @@
 [Spring Batch官网定义](https://docs.spring.io/spring-batch/docs/current/reference/html/index-single.html#step-scope)  
 要点在于@JobScope和@StepScope都是懒加载的。@JobScope在Job启动时初始化，且保证在运行Job的时候只有一个Bean的实例；@StepScope在Step启动时初始化。  
 
-所以如果Step上加了@JobScope注解，那么Step的Bean为延迟加载的。对于Start Job来说，会在Job会话中将该Step Bean初始化，而对于Stop Job来说，因为该Step无法初始化导致失败。  
+所以如果Step上加了@JobScope注解，那么Step的Bean为延迟加载的。对于Start Job来说，会在Job会话中将该Step Bean初始化，而对于Stop Job来说，因为该Step Bean无法初始化导致失败。  
 
 
 ### 解决方法
-去掉Step上的@JobScope注解，让Step的Bean随容器初始化。
+方法1：去掉Step上的@JobScope注解，让Step的Bean随容器初始化。  
+方法2：注册Job上下文，使其在创建Step Bean时能获取到Job参数，正常创建Bean。
 
 
 
