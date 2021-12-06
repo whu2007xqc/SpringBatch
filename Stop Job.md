@@ -22,3 +22,8 @@ private SingleResponse stopJob(JobExecutionRequestDO requestDO) {
 Spring Batch框架获得控制权之后，会检查Job的状态是否是STOPPING，若是则将其置为STOPPED，然后依次将其下的Step置为STOPPED。
 
 Job被STOPPED之后，仍然会执行Job Listener的afterJob方法，因此可以确切的知道何时Job被Stop掉，并追加一些业务处理。Step也是同理。
+
+### 异常情况
+如果一个Job在STARTED状态之中，遇到了服务器宕机了，重启应用之后再去Stop该Job会产生什么结果？  
+在应用重启之后，Stop指令依然可以成功发送给Spring Batch，此时Job的状态会被修改为STOPPING，但因为运行Job的线程已经不存在了，所以Job无法被置为STOPPED，Step也只能是Started。
+
