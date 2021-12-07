@@ -30,8 +30,7 @@ Job被STOPPED之后，仍然会执行Job Listener的afterJob方法，因此可�
 ### 具体实践
 1. 宕机  
 为了解决以上异常情况，需要判断Job线程是否存在，如果存在则正常停止Job，如果不存在，则直接更新数据库把状态修改为STOPPED。  
-因此需要在Job启动时，将线程id持久化到数据库中，然后在Stop时取出来对比当前的线程。
-
+因此需要在Job启动时，将线程id持久化到数据库中，然后在Stop时取出来对比当前的线程。  
 获取所有当前java线程：  
 https://www.runoob.com/java/thread-showall.html
 
